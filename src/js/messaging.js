@@ -231,6 +231,9 @@ var matrixSnapshot = function(pageStore, details) {
         collapseBlacklistedDomains: µmuser.popupCollapseBlacklistedDomains,
         diff: [],
         domain: pageStore.pageDomain,
+        // START UGLY TOOLTIP HACK
+        gcbLog: pageStore.gcbLog,
+        // END UGLY TOOLTIP HACK
         has3pReferrer: pageStore.has3pReferrer,
         hasMixedContent: pageStore.hasMixedContent,
         hasNoscriptTags: pageStore.hasNoscriptTags,

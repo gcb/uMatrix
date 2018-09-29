@@ -475,6 +475,19 @@ function updateMatrixBehavior() {
         while ( j-- ) {
             subdomainRow = subdomainRows.at(j);
             subdomainRow.toggleClass('collapsible', subdomainRow.descendants('.t81,.t82').length === 0);
+            // START UGLY TOOLTIP HACK
+            let domaintxt = subdomainRow.nodes[0].firstChild.textContent;
+            let domainregex = new RegExp('https?:\/\/'+domaintxt);
+            ['cookie', 'css', 'image', 'media', 'script', 'xhr', 'frame', 'other'].forEach(function(item, i){
+                if( domaintxt in matrixSnapshot.gcbLog ){
+                    subdomainRow.nodes[0].children[i+1].title = matrixSnapshot.gcbLog[domaintxt][item].map(
+                        function(url){
+                            return url.replace( domainregex, '' );
+                        }
+                    ).join("\n");
+                }
+            });
+            // END UGLY TOOLTIP HACK
         }
         section.toggleClass('collapsible', subdomainRows.filter('.collapsible').length > 0);
     }

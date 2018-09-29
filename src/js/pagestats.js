@@ -120,6 +120,7 @@ PageStore.prototype = {
         this.pageUrl = tabContext.normalURL;
         this.pageHostname = tabContext.rootHostname;
         this.pageDomain =  tabContext.rootDomain;
+        this.gcbLog = {};
         this.title = '';
         this.hostnameTypeCells.clear();
         this.domains.clear();
@@ -221,6 +222,42 @@ PageStore.prototype = {
         var hostname = µm.URI.hostnameFromURI(url),
             key = hostname + ' ' + type,
             uids = this.hostnameTypeCells.get(key);
+        // UGLY TOOLTIP HACK START
+        this.gcbLog[hostname] = this.gcbLog[hostname]
+            || {
+                cookie:[],
+                css:[],
+                doc:[],
+                frame:[],
+                image:[],
+                media:[],
+                other:[],
+                script:[],
+                xhr:[]
+            }
+        ;
+        function typeToFeature(t){
+            switch(t){
+                case 'font'          : return 'css';
+                case 'image'         : return 'image';
+                case 'imageset'      : return 'image';
+                case 'main_frame'    : return 'doc';
+                case 'media'         : return 'media';
+                case 'object'        : return 'media';
+                case 'other'         : return 'other';
+                case 'script'        : return 'script';
+                case 'stylesheet'    : return 'css';
+                case 'sub_frame'     : return 'frame';
+                case 'websocket'     : return 'xhr';
+                case 'xmlhttprequest': return 'xhr';
+                default: return t;
+            }
+        }
+        if( this.gcbLog[hostname][typeToFeature(type)].indexOf(url) === -1 ){
+            this.gcbLog[hostname][typeToFeature(type)].push(url);
+        }
+        // UGLY TOOLTIP HACK END
+
         if ( uids === undefined ) {
             this.hostnameTypeCells.set(key, (uids = new Set()));
         } else if ( uids.size > 99 ) {
